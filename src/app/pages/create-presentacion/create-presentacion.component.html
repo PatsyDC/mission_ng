@@ -1,0 +1,58 @@
+<form [formGroup]="fromP" (ngSubmit)="save()">
+  <div class="mb-4">
+    <h3 class="text-center">Presentación de hoy</h3>
+    <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Título</label>
+    <input
+      id="title"
+      type="text"
+      formControlName="title"
+      class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-gold-dark focus:border-gold-medium"
+      placeholder="Ingresa el título">
+  </div>
+
+  <div class="mb-4">
+    <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Descripción</label>
+    <textarea
+      id="description"
+      rows="4"
+      formControlName="description"
+      class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-gold-dark focus:border-gold-medium"
+      placeholder=""></textarea>
+  </div>
+
+  <div class="mb-4">
+    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="image_before">Imagen Antes</label>
+    <input
+      class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none"
+      (change)="onFileSelected($event)"
+      id="image_before"
+      type="file"
+      accept="image/*">
+  </div>
+
+  <div class="mb-4">
+    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="image_after">Imagen Después</label>
+    <input
+      class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none"
+      (change)="onFileSelected($event)"
+      id="image_after"
+      type="file"
+      accept="image/*">
+  </div>
+
+  <div class="mb-4">
+    <label for="fecha" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fecha</label>
+    <input
+      id="fecha"
+      type="date"
+      formControlName="fecha"
+      class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-gold-dark focus:border-gold-medium">
+  </div>
+
+  <button
+    type="submit"
+    class="w-32 bg-gradient-to-r from-cyan-400 to-cyan-600 text-white py-2 rounded-lg mx-auto block focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 mt-4 mb-6"
+    [disabled]="!isFormValid()">
+    Crear publicación
+  </button>
+</form>

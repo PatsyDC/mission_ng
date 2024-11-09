@@ -1,0 +1,9 @@
+<h1> Bienvenido a Missión </h1>
+
+<button class="w-32 bg-gradient-to-r from-cyan-400 to-cyan-600 text-white py-2 rounded-lg mx-auto block focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 mt-4 mb-6" (click)="openFormPresentacion()">Crear Presentación</button>
+
+<div>
+  @for(presentaciones of plantilla; track $index){
+    <a [routerLink]="['/presentacion', presentaciones.id]"> {{presentaciones.fecha}}</a>
+  }
+</div>
