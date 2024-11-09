@@ -4,26 +4,27 @@ import { PlantillasService } from '../../core/services/plantillas.service';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import PptxGenJS from 'pptxgenjs';
+import { User } from '../../core/models/user.model';
+import { CommonModule } from '@angular/common';
 
 
 @Component({
   selector: 'app-detalle-presentacion',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './detalle-presentacion.component.html',
   styleUrl: './detalle-presentacion.component.css'
 })
 export class DetallePresentacionComponent {
-
-
-  plantilla?: Plantilla
+  user?: User;
+  plantilla?: Plantilla;
 
   constructor(
     private route: ActivatedRoute,
     private service : PlantillasService
   ){}
 
-  ngOnInit(): void{
+  ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       const idNumber = parseInt(id, 10);
@@ -32,6 +33,12 @@ export class DetallePresentacionComponent {
         if (producto) {
           this.plantilla = producto;
           console.log(this.plantilla);
+
+          // Cargar los detalles del usuario
+          if (this.plantilla.user) {  // Si `user` es el ID del usuario
+            this.loadUser(this.plantilla.user);
+          }
+
         } else {
           console.error('Producto no encontrado');
         }
@@ -39,6 +46,19 @@ export class DetallePresentacionComponent {
     } else {
       console.error('ID inválido');
     }
+  }
+
+  // Método para cargar los detalles del usuario
+  loadUser(userId: number): void {
+    this.service.getListarUser(userId).subscribe(
+      (user: User) => {
+        this.user = user;  // Guardamos los detalles del usuario
+        console.log('Usuario cargado:', this.user);
+      },
+      error => {
+        console.error('Error al cargar usuario:', error);
+      }
+    );
   }
 
   async generatePPTX() {
