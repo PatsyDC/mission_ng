@@ -9,11 +9,16 @@ import { Observable, tap } from 'rxjs';
 export class AuthService {
 
   private url = 'http://127.0.0.1:8000/api/token/';
+  private api_register = 'http://localhost:8000/api';
   private tokenKey = 'authToken' //valor
 
   constructor(private http: HttpClient,
     private router: Router
   ) { }
+
+  registerUser(userData: any): Observable<any> {
+    return this.http.post(`${this.api_register}/register/`, userData);
+  }
 
   login(username: string, password: string): Observable<any>{
     return this.http.post<any>(this.url, {username, password}).pipe(
@@ -37,7 +42,6 @@ export class AuthService {
   }
 
   //validar el tiempo de expiración del token y si existe
-
   isAuthenticated():boolean{
     const token = this.getToken();
     if(!token){
