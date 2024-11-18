@@ -10,30 +10,23 @@
   </button>
 </div>
 
-<div class="fechas-container flex items-center justify-between" *ngIf="diasDelMes.length > 0">
-  <h2 class="mes-seleccionado text-xl font-semibold">Fechas de {{ mesSeleccionado }}</h2>
+<div class="fechas-container" *ngIf="diasDelMes.length > 0">
+  <h2 class="mes-seleccionado">Fechas de {{ mesSeleccionado }}</h2>
 
-  <div class="dias-column flex flex-wrap mt-4">
+  
+
+  <div class="dias-column">
     <div
       *ngFor="let dia of diasDelMes"
-      class="dia-item p-2 m-1 border rounded cursor-pointer flex items-center justify-between"
+      class="dia-item"
       (click)="abrirFormulario(dia)">
       <span>{{ dia }}</span>
+      <div class="iconos">
 
-      <!-- Icono de ojo al lado derecho de cada carta -->
-      <div class="flex items-center space-x-2">
-        <!-- Botón del lápiz solo se muestra si la fecha no ha pasado -->
         <button
-          class="p-1 rounded-full hover:bg-gray-200"
-          *ngIf="!fechaPasada(dia)"
-          (click)="abrirFormEditar($event, dia)">
-          <i class="fas fa-pencil-alt"></i> <!-- Icono de lápiz de FontAwesome -->
-        </button>
-
-        <!-- Botón del ojo -->
-        <!-- Botón del ojo -->
-        <button class="p-1 rounded-full hover:bg-gray-200" (click)="verDetalles(dia)">
-          <i class="fas fa-eye"></i> <!-- Icono de ojo de FontAwesome -->
+          (click)="verDetalles(dia)"
+          class="icono-boton">
+          <i class="fas fa-eye"></i>
         </button>
       </div>
     </div>

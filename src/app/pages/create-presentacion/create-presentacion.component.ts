@@ -26,8 +26,8 @@ export class CreatePresentacionComponent {
     this.fromP = this.formBuilder.group({
       description : ['', [Validators.required]],
       image_before : [null],
-      image_after: [null]
-      //fecha : ['', [Validators.required]],
+      image_after: [null],
+      fecha : ['', [Validators.required]],
     })
   }
 

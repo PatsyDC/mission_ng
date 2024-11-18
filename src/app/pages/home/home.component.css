@@ -1,3 +1,4 @@
+/* Contenedor principal de los meses */
 .meses-container {
   display: flex;
   flex-wrap: wrap;
@@ -6,6 +7,7 @@
   margin: 20px 0;
 }
 
+/* Botones de los meses */
 .mes-boton {
   background-color: #00bcd4;
   color: white;
@@ -21,33 +23,173 @@
   background-color: #008ba3;
 }
 
+/* Contenedor de fechas */
 .fechas-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 20px;
+  width: 100%;
 }
 
+/* Título del mes seleccionado */
 .mes-seleccionado {
   color: #555;
   font-size: 1.5rem;
   margin-bottom: 10px;
 }
 
-.dias-column {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
+/* Encabezado de las semanas */
+.semanas-header {
+  display: grid; /* Cambié flex a grid para distribuir mejor en columnas */
+  grid-template-columns: repeat(4, 1fr); /* 4 columnas por semana */
+  gap: 10px;
   width: 100%;
-  max-width: 300px;
+  max-width: 800px;
+  margin-bottom: 10px;
+  padding: 0 10px;
 }
 
-.dia-item {
-  padding: 10px;
-  background-color: #f1f1f1;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+.semana-label {
   text-align: center;
-  font-size: 0.9rem;
+  color: #888;
+  font-size: 1rem;
+}
+
+/* Contenedor de los días */
+.dias-column {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Ajusta las columnas a un tamaño más pequeño */
+  gap: 12px;
+  width: 100%;
+  max-width: 900px; /* Reducción del ancho máximo */
+  padding: 0 10px;
+}
+
+/* Estilo de las tarjetas de días */
+.dia-item {
+  padding: 8px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.85rem; /* Reducir tamaño de fuente */
   color: #333;
+  display: flex; /* Flex interno */
+  justify-content: space-between; /* Espaciado entre elementos */
+  align-items: center;
+  gap: 8px; /* Reducir espacio entre elementos */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background-color 0.3s ease;
+}
+
+.dia-item:hover {
+  background-color: #f0f8ff; /* Efecto hover */
+}
+
+/* Contenedor de íconos */
+.iconos {
+  display: flex;
+  gap: 5px; /* Espaciado entre íconos */
+}
+
+/* Estilo de los botones de íconos */
+.icono-boton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem; /* Tamaño reducido para íconos */
+  color: #555;
+  transition: color 0.3s ease;
+}
+
+.icono-boton:hover {
+  color: #00bcd4;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 1024px) {
+  .dias-column {
+    grid-template-columns: repeat(3, 1fr); /* Reduce a 3 columnas en tabletas */
+    max-width: 720px; /* Ancho máximo en tabletas */
+  }
+
+  .dia-item {
+    font-size: 0.8rem; /* Texto más pequeño */
+    padding: 7px; /* Reducir padding */
+  }
+
+  .icono-boton {
+    font-size: 0.9rem; /* Íconos más pequeños */
+  }
+
+  .mes-seleccionado {
+    font-size: 1.2rem; /* Reducción del tamaño de la fuente del mes */
+  }
+
+  /* Ocultar el encabezado de las semanas en pantallas más pequeñas */
+  .semanas-header {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .dias-column {
+    grid-template-columns: repeat(2, 1fr); /* Reduce a 2 columnas */
+    max-width: 600px; /* Ancho máximo en pantallas más pequeñas */
+  }
+
+  .dia-item {
+    font-size: 0.75rem; /* Texto aún más pequeño */
+    padding: 5px; /* Padding más pequeño */
+  }
+
+  .icono-boton {
+    font-size: 0.8rem; /* Íconos más pequeños */
+  }
+
+  .mes-seleccionado {
+    font-size: 1.1rem; /* Reducción del tamaño de la fuente del mes */
+  }
+
+  .mes-boton {
+    padding: 8px 16px; /* Reducción de tamaño de botones */
+    font-size: 0.9rem; /* Reducción del tamaño de la fuente del botón */
+  }
+
+  /* Ocultar el encabezado de las semanas en pantallas más pequeñas */
+  .semanas-header {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .dias-column {
+    grid-template-columns: repeat(2, 1fr); /* Mantiene 2 columnas incluso en móviles */
+    max-width: 100%; /* El ancho máximo ahora será el 100% */
+  }
+
+  .dia-item {
+    font-size: 0.65rem; /* Texto pequeño pero legible */
+    padding: 4px; /* Contenedor muy compacto */
+  }
+
+  .icono-boton {
+    font-size: 0.7rem; /* Íconos reducidos */
+  }
+
+  .mes-seleccionado {
+    font-size: 1rem; /* Reducción del tamaño de la fuente del mes */
+  }
+
+  .mes-boton {
+    padding: 6px 12px; /* Botones más pequeños */
+    font-size: 0.8rem; /* Texto más pequeño en botones */
+  }
+
+  /* Ocultar el encabezado de las semanas en pantallas más pequeñas */
+  .semanas-header {
+    display: none;
+  }
 }
