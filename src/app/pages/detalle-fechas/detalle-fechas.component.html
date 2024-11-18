@@ -1,0 +1,46 @@
+<div class="container mx-auto p-4">
+  <h1 class="text-2xl font-bold mb-4">Registros del día {{ fecha }}</h1>
+
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="text-center py-4">
+    <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+  </div>
+
+  <!-- Error message -->
+  <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!loading && !error">
+    <div *ngIf="registros.length > 0; else noRecords" class="mt-6">
+      <table class="min-w-full bg-white">
+        <thead>
+          <tr>
+            <th class="py-2 px-4 border-b">ID</th>
+            <th class="py-2 px-4 border-b">Nombre del Usuario</th>
+            <th class="py-2 px-4 border-b">Descripción</th>
+            <th class="py-2 px-4 border-b">img antes</th>
+            <th class="py-2 px-4 border-b">img después</th>
+            <th class="py-2 px-4 border-b">Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let registro of registros">
+            <td class="py-2 px-4 border-b">{{ registro.id }}</td>
+            <td class="py-2 px-4 border-b">{{ registro.usuario }}</td>
+            <td class="py-2 px-4 border-b">{{ registro.description }}</td>
+            <div class="flex space-x-2">
+              <img [src]="registro?.image_before" alt="">
+              <img [src]="registro?.image_after" alt="">
+            </div>
+            <td class="py-2 px-4 border-b">{{ registro.fecha | date:'dd/MM/yyyy' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <ng-template #noRecords>
+    <p class="text-gray-500 text-center">No hay registros para esta fecha.</p>
+  </ng-template>
+</div>

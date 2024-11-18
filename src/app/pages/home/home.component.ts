@@ -3,9 +3,10 @@ import { PlantillasService } from '../../core/services/plantillas.service';
 import { Plantilla } from '../../core/models/modelo.model';
 import { CreatePresentacionComponent } from '../create-presentacion/create-presentacion.component';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { RouterLink, RouterModule } from '@angular/router';
+import { Router, RouterLink, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { EditarPresentacionComponent } from '../editar-presentacion/editar-presentacion.component';
 
 @Component({
   selector: 'app-home',
@@ -16,6 +17,7 @@ import { CommonModule } from '@angular/common';
 })
 export class HomeComponent {
   private dialog = inject(MatDialog);
+  private router = inject(Router);
 
   meses: string[] = [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo',
@@ -48,7 +50,6 @@ export class HomeComponent {
     const diferenciaTiempo = fechaActual.getTime() - fechaSeleccionada.getTime();
     const diferenciaDias = Math.floor(diferenciaTiempo / (1000 * 3600 * 24));
 
-    // Verifica si la diferencia es mayor a 3 días
     if (diferenciaDias > 3) {
       alert('No puedes acceder al formulario para fechas que tienen más de 3 días de antigüedad.');
       return;
@@ -63,7 +64,34 @@ export class HomeComponent {
     });
   }
 
-  cerrarFormulario(): void {
-    this.mostrarFormulario = false;
+  fechaPasada(dia: string): boolean {
+    const fechaSeleccionada = new Date(dia);
+    const fechaActual = new Date();
+
+    const diferenciaTiempo = fechaActual.getTime() - fechaSeleccionada.getTime();
+    const diferenciaDias = Math.floor(diferenciaTiempo / (1000 * 3600 * 24));
+
+    return diferenciaDias > 3; // Más de 3 días
   }
+
+  verDetalles(fecha: string): void {
+    console.log('Fecha seleccionada:', fecha); // Para debugging
+    this.router.navigate(['/presentaciones'], {
+      queryParams: { fecha: fecha }
+    });
+  }
+
+
+  abrirFormEditar(event: Event, fecha: string): void {
+    event.stopPropagation(); // Evita que el click en el lápiz dispare el evento del día
+
+    const dialog = this.dialog.open(EditarPresentacionComponent);
+
+    dialog.afterClosed().subscribe(result => {
+      if (result === true) {
+        console.log('Edición completada');
+      }
+    });
+
+}
 }

@@ -21,9 +21,21 @@
       <span>{{ dia }}</span>
 
       <!-- Icono de ojo al lado derecho de cada carta -->
-      <button class="p-1 rounded-full hover:bg-gray-200">
-        <i class="fas fa-eye"></i> <!-- Icono de ojo de FontAwesome -->
-      </button>
+      <div class="flex items-center space-x-2">
+        <!-- Botón del lápiz solo se muestra si la fecha no ha pasado -->
+        <button
+          class="p-1 rounded-full hover:bg-gray-200"
+          *ngIf="!fechaPasada(dia)"
+          (click)="abrirFormEditar($event, dia)">
+          <i class="fas fa-pencil-alt"></i> <!-- Icono de lápiz de FontAwesome -->
+        </button>
+
+        <!-- Botón del ojo -->
+        <!-- Botón del ojo -->
+        <button class="p-1 rounded-full hover:bg-gray-200" (click)="verDetalles(dia)">
+          <i class="fas fa-eye"></i> <!-- Icono de ojo de FontAwesome -->
+        </button>
+      </div>
     </div>
   </div>
 </div>
