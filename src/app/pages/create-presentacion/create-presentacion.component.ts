@@ -24,7 +24,6 @@ export class CreatePresentacionComponent {
     private dialog: MatDialogRef<CreatePresentacionComponent>
   ) {
     this.fromP = this.formBuilder.group({
-      title : ['', [Validators.required]],
       description : ['', [Validators.required]],
       image_before : [null],
       image_after: [null],
@@ -32,7 +31,7 @@ export class CreatePresentacionComponent {
     })
   }
 
-  onFileSelected(event: any) {
+  onFileSelected(event: any, imageType: string) {
     const fileInput = event.target;
     if (fileInput.id === 'image_before') {
       this.selectedImageBefore = fileInput.files[0] as File;
@@ -79,4 +78,55 @@ export class CreatePresentacionComponent {
       }
     }
   }
+
+  takePhoto(imageType: string) {
+    const videoElement = document.createElement('video');
+    const canvasElement = document.createElement('canvas');
+    const context = canvasElement.getContext('2d');
+
+    if (!context) return;
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then((stream) => {
+        videoElement.srcObject = stream;
+        videoElement.play();
+
+        // Abrir un modal o popup con la vista de la cámara
+        const modal = document.createElement('div');
+        modal.classList.add('camera-modal');
+        modal.innerHTML = `
+          <div class="camera-container">
+            <video id="video" autoplay></video>
+            <button id="capture" class="capture-button">Capturar Foto</button>
+          </div>
+        `;
+        document.body.appendChild(modal);
+
+        const captureButton = document.getElementById('capture');
+        captureButton?.addEventListener('click', () => {
+          context.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
+          const dataUrl = canvasElement.toDataURL('image/png');
+
+          // Convert the data URL to a Blob and set it as the image file
+          fetch(dataUrl)
+            .then(res => res.blob())
+            .then(blob => {
+              if (imageType === 'image_before') {
+                this.selectedImageBefore = new File([blob], 'captured_image_before.png', { type: 'image/png' });
+              } else if (imageType === 'image_after') {
+                this.selectedImageAfter = new File([blob], 'captured_image_after.png', { type: 'image/png' });
+              }
+            });
+
+          // Detener el stream y cerrar el modal
+          stream.getTracks().forEach(track => track.stop());
+          modal.remove();
+        });
+      })
+      .catch((error) => {
+        console.error("Error accessing the camera: ", error);
+      });
+  }
+
+
 }

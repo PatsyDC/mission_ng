@@ -72,7 +72,7 @@ export class DetallePresentacionComponent {
       const slide = pres.addSlide();
 
       // Agregar título
-      slide.addText(this.plantilla.title, {
+      slide.addText(this.plantilla.description, {
         x: 0.5,
         y: 0.5,
         w: '90%',
@@ -123,7 +123,7 @@ export class DetallePresentacionComponent {
       }
 
       // Guardar el archivo usando el método writeFile
-      await pres.writeFile({ fileName: `presentacion_${this.plantilla.title}.pptx` });
+      await pres.writeFile({ fileName: `presentacion_${this.plantilla.description}.pptx` });
 
       console.log('Presentación generada exitosamente');
 

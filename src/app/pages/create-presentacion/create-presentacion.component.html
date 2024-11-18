@@ -4,18 +4,6 @@
     <h3 class="text-2xl font-light text-gray-800 sm:text-xl">Presentación de hoy</h3>
   </div>
 
-  <!-- Título de la presentación -->
-  <div class="mb-6">
-    <label for="title" class="block text-base font-medium text-gray-700">Título</label>
-    <input
-      id="title"
-      type="text"
-      formControlName="title"
-      class="mt-3 p-4 w-full text-base bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
-      placeholder="Ingresa el título"
-    />
-  </div>
-
   <!-- Descripción -->
   <div class="mb-6">
     <label for="description" class="block text-base font-medium text-gray-700">Descripción</label>
@@ -30,25 +18,41 @@
   <!-- Imagen Antes -->
   <div class="mb-6">
     <label for="image_before" class="block text-base font-medium text-gray-700">Imagen Antes</label>
-    <input
-      class="mt-3 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50"
-      (change)="onFileSelected($event)"
-      id="image_before"
-      type="file"
-      accept="image/*"
-    />
+
+    <div class="flex space-x-4">
+      <!-- Selección de Archivo -->
+      <input
+        class="mt-3 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50"
+        (change)="onFileSelected($event, 'image_before')"
+        id="image_before"
+        type="file"
+        accept="image/*"
+      />
+      <!-- Botón para Tomar Foto -->
+      <button type="button" (click)="takePhoto('image_before')" class="mt-3 px-4 py-2 text-sm text-white bg-blue-600 rounded-lg">
+        Tomar Foto
+      </button>
+    </div>
   </div>
 
   <!-- Imagen Después -->
   <div class="mb-6">
     <label for="image_after" class="block text-base font-medium text-gray-700">Imagen Después</label>
-    <input
-      class="mt-3 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50"
-      (change)="onFileSelected($event)"
-      id="image_after"
-      type="file"
-      accept="image/*"
-    />
+
+    <div class="flex space-x-4">
+      <!-- Selección de Archivo -->
+      <input
+        class="mt-3 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50"
+        (change)="onFileSelected($event, 'image_after')"
+        id="image_after"
+        type="file"
+        accept="image/*"
+      />
+      <!-- Botón para Tomar Foto -->
+      <button type="button" (click)="takePhoto('image_after')" class="mt-3 px-4 py-2 text-sm text-white bg-blue-600 rounded-lg">
+        Tomar Foto
+      </button>
+    </div>
   </div>
 
   <!-- Fecha -->

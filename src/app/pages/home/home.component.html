@@ -1,4 +1,4 @@
-<h1>Calendario de Fechas</h1>
+<h1 class="text-center">Calendario de Fechas</h1>
 
 <!-- Botones de los meses -->
 <div class="meses-container">
@@ -10,12 +10,21 @@
   </button>
 </div>
 
-<!-- Fechas del mes seleccionado -->
-<div class="fechas-container" *ngIf="diasDelMes.length > 0">
-  <h2 class="mes-seleccionado">Fechas de {{ mesSeleccionado }}</h2>
-  <div class="dias-column">
-    <div *ngFor="let dia of diasDelMes" class="dia-item" (click)="abrirFormulario()">
-      {{ dia }}
+<div class="fechas-container flex items-center justify-between" *ngIf="diasDelMes.length > 0">
+  <h2 class="mes-seleccionado text-xl font-semibold">Fechas de {{ mesSeleccionado }}</h2>
+
+  <div class="dias-column flex flex-wrap mt-4">
+    <div *ngFor="let dia of diasDelMes" class="dia-item p-2 m-1 border rounded cursor-pointer flex items-center justify-between" (click)="abrirFormulario()">
+      <span>{{ dia }}</span>
+
+      <!-- Icono de ojo al lado derecho de cada carta -->
+      <button class="p-1 rounded-full hover:bg-gray-200">
+        <i class="fas fa-eye"></i> <!-- Icono de ojo de FontAwesome -->
+      </button>
     </div>
   </div>
 </div>
+
+
+
+
