@@ -14,7 +14,10 @@
   <h2 class="mes-seleccionado text-xl font-semibold">Fechas de {{ mesSeleccionado }}</h2>
 
   <div class="dias-column flex flex-wrap mt-4">
-    <div *ngFor="let dia of diasDelMes" class="dia-item p-2 m-1 border rounded cursor-pointer flex items-center justify-between" (click)="abrirFormulario()">
+    <div
+      *ngFor="let dia of diasDelMes"
+      class="dia-item p-2 m-1 border rounded cursor-pointer flex items-center justify-between"
+      (click)="abrirFormulario(dia)">
       <span>{{ dia }}</span>
 
       <!-- Icono de ojo al lado derecho de cada carta -->
@@ -24,7 +27,3 @@
     </div>
   </div>
 </div>
-
-
-
-

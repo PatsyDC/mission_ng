@@ -7,23 +7,20 @@ import { RouterLink, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
-
-
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [MatDialogModule, RouterLink, FormsModule, CommonModule,RouterModule],
+  imports: [MatDialogModule, RouterLink, FormsModule, CommonModule, RouterModule],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.css'
+  styleUrl: './home.component.css',
 })
-
 export class HomeComponent {
   private dialog = inject(MatDialog);
 
   meses: string[] = [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo',
     'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
-    'Noviembre', 'Diciembre'
+    'Noviembre', 'Diciembre',
   ];
   diasDelMes: string[] = [];
   mesSeleccionado: string | null = null;
@@ -43,14 +40,27 @@ export class HomeComponent {
     this.mesSeleccionado = this.meses[indiceMes];
   }
 
-  abrirFormulario(): void {
+  abrirFormulario(fecha: string): void {
+    const fechaSeleccionada = new Date(fecha);
+    const fechaActual = new Date();
+
+    // Calcula la diferencia en días
+    const diferenciaTiempo = fechaActual.getTime() - fechaSeleccionada.getTime();
+    const diferenciaDias = Math.floor(diferenciaTiempo / (1000 * 3600 * 24));
+
+    // Verifica si la diferencia es mayor a 3 días
+    if (diferenciaDias > 3) {
+      alert('No puedes acceder al formulario para fechas que tienen más de 3 días de antigüedad.');
+      return;
+    }
+
     const dialog = this.dialog.open(CreatePresentacionComponent);
 
-    dialog.afterClosed().subscribe(result => {
-      if(result === true) {
-        console.log("OK")
+    dialog.afterClosed().subscribe((result) => {
+      if (result === true) {
+        console.log('OK');
       }
-    })
+    });
   }
 
   cerrarFormulario(): void {
