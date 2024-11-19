@@ -15,12 +15,11 @@
       placeholder="Ingresa la descripción"></textarea>
   </div>
 
-  <!-- Imagen Antes y Después (idéntico a lo que ya tienes) -->
+  <!-- Imagen Antes -->
   <div class="mb-6">
     <label for="image_before" class="block text-base font-medium text-gray-700">Imagen Antes</label>
 
     <div class="flex space-x-4">
-      <!-- Selección de Archivo -->
       <input
         class="mt-3 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50"
         (change)="onFileSelected($event, 'image_before')"
@@ -28,6 +27,14 @@
         type="file"
         accept="image/*"
       />
+      <button type="button" (click)="takePhoto('image_before')" class="mt-3 px-4 py-2 text-sm text-white bg-blue-600 rounded-lg">
+        Tomar Foto
+      </button>
+    </div>
+
+    <!-- Vista previa -->
+    <div class="preview mt-3">
+      <img *ngIf="imagePreviewBefore" [src]="imagePreviewBefore" alt="Vista previa - Imagen Antes" class="w-full h-auto rounded-md border" />
     </div>
   </div>
 
@@ -36,7 +43,6 @@
     <label for="image_after" class="block text-base font-medium text-gray-700">Imagen Después</label>
 
     <div class="flex space-x-4">
-      <!-- Selección de Archivo -->
       <input
         class="mt-3 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50"
         (change)="onFileSelected($event, 'image_after')"
@@ -44,9 +50,34 @@
         type="file"
         accept="image/*"
       />
+      <button type="button" (click)="takePhoto('image_after')" class="mt-3 px-4 py-2 text-sm text-white bg-blue-600 rounded-lg">
+        Tomar Foto
+      </button>
+    </div>
+
+    <!-- Vista previa -->
+    <div class="preview mt-3">
+      <img *ngIf="imagePreviewAfter" [src]="imagePreviewAfter" alt="Vista previa - Imagen Después" class="w-full h-auto rounded-md border" />
     </div>
   </div>
 
+  <!-- Modal de la Cámara -->
+  <div *ngIf="showWebcam" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg p-4 w-96">
+      <webcam
+        [trigger]="triggerObservable"
+        (imageCapture)="handleImage($event)"
+        [allowCameraSwitch]="allowCameraSwitch"
+        (initError)="handleInitError($event)"
+      ></webcam>
+      <div class="flex justify-between mt-4">
+        <button (click)="showWebcam = false" class="px-4 py-2 bg-gray-500 text-white rounded">Cerrar</button>
+        <button (click)="triggerSnapshot()" class="px-4 py-2 bg-blue-600 text-white rounded">Capturar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fecha -->
   <div class="mb-6">
     <label for="fecha" class="block text-base font-medium text-gray-700">Fecha</label>
     <input

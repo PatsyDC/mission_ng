@@ -3,26 +3,38 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { PlantillasService } from '../../core/services/plantillas.service';
 import { AuthService } from '../../core/services/auth.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { CommonModule } from '@angular/common';
+import { WebcamImage, WebcamInitError, WebcamModule, WebcamUtil } from 'ngx-webcam';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-editar-presentacion',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, CommonModule, WebcamModule],
   templateUrl: './editar-presentacion.component.html',
-  styleUrl: './editar-presentacion.component.css'
+  styleUrls: ['./editar-presentacion.component.css']
 })
 export class EditarPresentacionComponent {
-
   fromP: FormGroup;
   selectedImageBefore: File | null = null;
   selectedImageAfter: File | null = null;
+  imagePreviewBefore: string | null = null;
+  imagePreviewAfter: string | null = null;
+
+  // Control de la cámara
+  showWebcam = false;
+  allowCameraSwitch = true;
+  multipleWebcamsAvailable = false;
+  deviceId: string | undefined;
+  trigger: Subject<void> = new Subject<void>();
+  webcamImage: WebcamImage | null = null;
 
   constructor(
     private servicePresentacion: PlantillasService,
     private authService: AuthService,
     private formBuilder: FormBuilder,
     private dialog: MatDialogRef<EditarPresentacionComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { plantillaId: number, plantilla: any }
+    @Inject(MAT_DIALOG_DATA) public data: { plantillaId: number; plantilla: any }
   ) {
     console.log('ID recibido:', data.plantillaId);
 
@@ -30,33 +42,83 @@ export class EditarPresentacionComponent {
       description: [data.plantilla.description, [Validators.required]],
       image_before: [null],
       image_after: [null],
-      fecha: [data.plantilla.fecha, [Validators.required]],
+      fecha: [data.plantilla.fecha, [Validators.required]]
     });
 
-    // Conservar las imágenes existentes si no se seleccionan nuevas
-    this.selectedImageBefore = data.plantilla.image_before;
-    this.selectedImageAfter = data.plantilla.image_after;
+    // Inicializar las previsualizaciones con las URLs de las imágenes existentes
+    this.imagePreviewBefore = data.plantilla.image_before; // URL de la imagen "Antes"
+    this.imagePreviewAfter = data.plantilla.image_after; // URL de la imagen "Después"
+
+    // Verificar disponibilidad de cámaras
+    WebcamUtil.getAvailableVideoInputs().then((mediaDevices: MediaDeviceInfo[]) => {
+      this.multipleWebcamsAvailable = mediaDevices && mediaDevices.length > 1;
+    });
   }
 
-  // Método para manejar la selección de archivos
+  // Manejar la selección de archivos y actualizar la vista previa
   onFileSelected(event: any, imageType: string) {
     const file = event.target.files[0];
     if (file) {
-      if (imageType === 'image_before') {
-        this.selectedImageBefore = file;
-        this.fromP.patchValue({ image_before: file });
-      } else if (imageType === 'image_after') {
-        this.selectedImageAfter = file;
-        this.fromP.patchValue({ image_after: file });
-      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (imageType === 'image_before') {
+          this.selectedImageBefore = file;
+          this.imagePreviewBefore = reader.result as string; // Actualizar la vista previa
+          this.fromP.patchValue({ image_before: file });
+        } else if (imageType === 'image_after') {
+          this.selectedImageAfter = file;
+          this.imagePreviewAfter = reader.result as string; // Actualizar la vista previa
+          this.fromP.patchValue({ image_after: file });
+        }
+      };
+      reader.readAsDataURL(file); // Leer archivo como URL de datos
     }
   }
 
-  // Método para validar el formulario
-  isFormValid(): boolean {
-    return this.fromP.valid && this.selectedImageBefore !== null && this.selectedImageAfter !== null;
+  // Activar la cámara y capturar imágenes
+  takePhoto(imageType: string): void {
+    this.showWebcam = true;
+    console.log(`Activando cámara para: ${imageType}`);
   }
 
+  // Manejar la imagen capturada
+  handleImage(webcamImage: WebcamImage): void {
+    this.webcamImage = webcamImage;
+    const capturedImage = webcamImage.imageAsDataUrl;
+
+    if (this.showWebcam) {
+      if (this.fromP.get('image_before')?.value === null) {
+        this.imagePreviewBefore = capturedImage;
+        this.fromP.patchValue({ image_before: capturedImage });
+      } else if (this.fromP.get('image_after')?.value === null) {
+        this.imagePreviewAfter = capturedImage;
+        this.fromP.patchValue({ image_after: capturedImage });
+      }
+    }
+    this.showWebcam = false;
+  }
+
+  // Manejar errores al inicializar la cámara
+  handleInitError(error: WebcamInitError): void {
+    console.error('Error inicializando la cámara:', error);
+  }
+
+  // Trigger para capturar imágenes
+  triggerSnapshot(): void {
+    this.trigger.next();
+  }
+
+  // Observable del trigger
+  get triggerObservable(): Subject<void> {
+    return this.trigger;
+  }
+
+  // Validar formulario
+  isFormValid(): boolean {
+    return this.fromP.valid && this.imagePreviewBefore !== null && this.imagePreviewAfter !== null;
+  }
+
+  // Guardar cambios
   save() {
     if (this.fromP.valid) {
       const userId = this.authService.getCurrentUserId();
@@ -65,7 +127,7 @@ export class EditarPresentacionComponent {
         formData.append('user', userId.toString());
         formData.append('description', this.fromP.get('description')?.value);
 
-        // Solo adjuntar nuevas imágenes si se han seleccionado
+        // Adjuntar nuevas imágenes si han sido seleccionadas
         if (this.selectedImageBefore instanceof File) {
           formData.append('image_before', this.selectedImageBefore);
         }
@@ -79,7 +141,7 @@ export class EditarPresentacionComponent {
 
         this.servicePresentacion.putPresentacion(this.data.plantillaId, formData).subscribe({
           next: (res) => {
-            console.log("Publicación actualizada correctamente:", res);
+            console.log('Publicación actualizada correctamente:', res);
             this.dialog.close(true);
           },
           error: (error) => {
@@ -89,5 +151,4 @@ export class EditarPresentacionComponent {
       }
     }
   }
-
 }
