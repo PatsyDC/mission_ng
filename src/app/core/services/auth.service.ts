@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
+import { User } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -57,6 +58,16 @@ export class AuthService {
     localStorage.removeItem(this.tokenKey);
     this.router.navigate(['/login']);
   }
+
+  getUser(): Observable<User> {
+    const token = this.getToken();
+    return this.http.get<User>(`${this.api_register}/users/`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  }
+
 
   getCurrentUserId(): number | null {
     const token = this.getToken();

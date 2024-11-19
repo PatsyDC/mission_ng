@@ -7,6 +7,7 @@ import PptxGenJS from 'pptxgenjs';
 import { EditarPresentacionComponent } from '../editar-presentacion/editar-presentacion.component';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { User } from '../../core/models/user.model';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-detalle-fechas',
@@ -23,10 +24,12 @@ export class DetalleFechasComponent implements OnInit {
   error: string | null = null;
   plantilla: any;
   user?: User;
+  isStaff: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private plantillaService: PlantillasService,
+    private authService: AuthService,
     private dialog: MatDialog,
     @Optional() @Inject(MAT_DIALOG_DATA) public data: { plantilla: any } | null
   ) {
@@ -36,6 +39,8 @@ export class DetalleFechasComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
+    this.getUserData();
     // Si no estamos en modo diálogo, obtener fecha de los parámetros de la ruta
     if (!this.data) {
       this.route.queryParams.subscribe(params => {
@@ -44,7 +49,7 @@ export class DetalleFechasComponent implements OnInit {
           console.log('Fecha recibida en el componente:', this.fecha);
           this.cargarRegistrosPorFecha(this.fecha);
         }
-        
+
       });
     }
     // Si estamos en modo diálogo, usar los datos proporcionados
@@ -54,6 +59,17 @@ export class DetalleFechasComponent implements OnInit {
     }
   }
 
+  getUserData(): void {
+    this.authService.getUser().subscribe({
+      next: (user: User) => {
+        this.user = user;
+        this.isStaff = user.is_staff; // Verifica si es staff
+      },
+      error: (error) => {
+        console.error('Error al obtener la información del usuario:', error);
+      }
+    });
+  }
   cargarRegistrosPorFecha(fecha: string): void {
     this.loading = true;
     this.error = null;
@@ -91,14 +107,15 @@ export class DetalleFechasComponent implements OnInit {
   loadUserDetails(registro: any): void {
     this.plantillaService.getListarUser(registro.user).subscribe(
       (user: User) => {
-        // Almacena el nombre completo del usuario en el registro
         registro.usuarioNombre = `${user.username} ${user.last_name}`;
       },
       error => {
         console.error('Error al cargar usuario:', error);
+        // Añadir lógica adicional si es necesario
       }
     );
   }
+
 
   async generatePPTX() {
     if (this.registros.length === 0) {

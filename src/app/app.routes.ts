@@ -6,8 +6,8 @@ import { RegisterComponent } from './pages/authetication/register/register.compo
 import { DetalleFechasComponent } from './pages/detalle-fechas/detalle-fechas.component';
 
 export const routes: Routes = [
-  {path: '', component: HomeComponent},
-  {path: 'login', component: LoginComponent},
+  {path: 'home', component: HomeComponent},
+  {path: '', component: LoginComponent},
   {path: 'register', component: RegisterComponent},
   {path: 'presentacion/:id', component: DetallePresentacionComponent},
   {path: 'presentaciones', component: DetalleFechasComponent}
