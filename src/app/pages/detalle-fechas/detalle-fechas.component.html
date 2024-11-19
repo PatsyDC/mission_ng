@@ -29,18 +29,29 @@
             <td class="py-2 px-4 border-b">{{ registro.id }}</td>
             <td class="py-2 px-4 border-b">{{ registro.usuario }}</td>
             <td class="py-2 px-4 border-b">{{ registro.description }}</td>
-            <div class="flex space-x-2">
-              <img [src]="registro?.image_before" alt="">
-              <img [src]="registro?.image_after" alt="">
-            </div>
+            <td class="py-2 px-4 border-b">
+              <img [src]="registro?.image_before" alt="Imagen antes" class="max-w-xs">
+            </td>
+            <td class="py-2 px-4 border-b">
+              <img [src]="registro?.image_after" alt="Imagen después" class="max-w-xs">
+            </td>
             <td class="py-2 px-4 border-b">{{ registro.fecha | date:'dd/MM/yyyy' }}</td>
           </tr>
         </tbody>
       </table>
     </div>
+
+    <button
+    (click)="generatePPTX()"
+    class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+  >
+    Generar PPTX
+  </button>
+
   </div>
 
   <ng-template #noRecords>
     <p class="text-gray-500 text-center">No hay registros para esta fecha.</p>
   </ng-template>
 </div>
+
