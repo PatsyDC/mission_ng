@@ -92,6 +92,5 @@ export class HomeComponent {
         console.log('Edición completada');
       }
     });
-
 }
 }

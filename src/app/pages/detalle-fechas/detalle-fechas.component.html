@@ -22,12 +22,13 @@
             <th class="py-2 px-4 border-b">img antes</th>
             <th class="py-2 px-4 border-b">img después</th>
             <th class="py-2 px-4 border-b">Fecha</th>
+            <th class="py-2 px-4 border-b">Acciones</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let registro of registros">
             <td class="py-2 px-4 border-b">{{ registro.id }}</td>
-            <td class="py-2 px-4 border-b">{{ registro.usuario }}</td>
+            <td class="py-2 px-4 border-b">{{ registro.usuarioNombre }}</td>
             <td class="py-2 px-4 border-b">{{ registro.description }}</td>
             <td class="py-2 px-4 border-b">
               <img [src]="registro?.image_before" alt="Imagen antes" class="max-w-xs">
@@ -36,6 +37,11 @@
               <img [src]="registro?.image_after" alt="Imagen después" class="max-w-xs">
             </td>
             <td class="py-2 px-4 border-b">{{ registro.fecha | date:'dd/MM/yyyy' }}</td>
+            <td>
+              <button  class="icono-boton text-center" (click)="abrirFormEditar(registro.id)">
+                <i class="fas fa-pencil"></i>
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>

@@ -22,59 +22,70 @@ export class EditarPresentacionComponent {
     private authService: AuthService,
     private formBuilder: FormBuilder,
     private dialog: MatDialogRef<EditarPresentacionComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { plantillaId: number, plantilla: any } // Datos inyectados con la plantilla a editar
+    @Inject(MAT_DIALOG_DATA) public data: { plantillaId: number, plantilla: any }
   ) {
+    console.log('ID recibido:', data.plantillaId);
+
     this.fromP = this.formBuilder.group({
       description: [data.plantilla.description, [Validators.required]],
       image_before: [null],
-      image_after: [null]
-
+      image_after: [null],
+      fecha: [data.plantilla.fecha, [Validators.required]],
     });
 
-    // Si ya tienes imágenes guardadas, puedes asignarlas aquí
+    // Conservar las imágenes existentes si no se seleccionan nuevas
     this.selectedImageBefore = data.plantilla.image_before;
     this.selectedImageAfter = data.plantilla.image_after;
   }
 
+  // Método para manejar la selección de archivos
   onFileSelected(event: any, imageType: string) {
-    const fileInput = event.target;
-    if (fileInput.id === 'image_before') {
-      this.selectedImageBefore = fileInput.files[0] as File;
-    } else if (fileInput.id === 'image_after') {
-      this.selectedImageAfter = fileInput.files[0] as File;
+    const file = event.target.files[0];
+    if (file) {
+      if (imageType === 'image_before') {
+        this.selectedImageBefore = file;
+        this.fromP.patchValue({ image_before: file });
+      } else if (imageType === 'image_after') {
+        this.selectedImageAfter = file;
+        this.fromP.patchValue({ image_after: file });
+      }
     }
   }
 
+  // Método para validar el formulario
   isFormValid(): boolean {
     return this.fromP.valid && this.selectedImageBefore !== null && this.selectedImageAfter !== null;
   }
 
   save() {
-    if (this.fromP.valid && this.selectedImageBefore && this.selectedImageAfter) {
+    if (this.fromP.valid) {
       const userId = this.authService.getCurrentUserId();
       if (userId) {
         const formData = new FormData();
         formData.append('user', userId.toString());
         formData.append('description', this.fromP.get('description')?.value);
-        if (this.selectedImageBefore) {
-          formData.append('image_before', this.selectedImageBefore, this.selectedImageBefore.name);
+
+        // Solo adjuntar nuevas imágenes si se han seleccionado
+        if (this.selectedImageBefore instanceof File) {
+          formData.append('image_before', this.selectedImageBefore);
         }
-        if (this.selectedImageAfter) {
-          formData.append('image_after', this.selectedImageAfter, this.selectedImageAfter.name);
+        if (this.selectedImageAfter instanceof File) {
+          formData.append('image_after', this.selectedImageAfter);
         }
 
-        // Llamar al servicio de PUT para actualizar la presentación
+        formData.append('fecha', this.fromP.get('fecha')?.value);
+
+        console.log('Actualizando presentación con ID:', this.data.plantillaId);
+
         this.servicePresentacion.putPresentacion(this.data.plantillaId, formData).subscribe({
           next: (res) => {
             console.log("Publicación actualizada correctamente:", res);
-            this.dialog.close(true); // Cerrar el diálogo y pasar un valor de éxito
+            this.dialog.close(true);
           },
           error: (error) => {
             console.error('Error updating presentation:', error);
           }
         });
-      } else {
-        console.error("No se pudo obtener el ID del usuario");
       }
     }
   }

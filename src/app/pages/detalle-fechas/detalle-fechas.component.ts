@@ -1,14 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, inject, OnInit, Optional } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PlantillasService } from '../../core/services/plantillas.service';
 import { Plantilla } from '../../core/models/modelo.model';
 import PptxGenJS from 'pptxgenjs';
+import { EditarPresentacionComponent } from '../editar-presentacion/editar-presentacion.component';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { User } from '../../core/models/user.model';
 
 @Component({
   selector: 'app-detalle-fechas',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatDialogModule],
   templateUrl: './detalle-fechas.component.html',
   styleUrl: './detalle-fechas.component.css'
 })
@@ -18,20 +21,37 @@ export class DetalleFechasComponent implements OnInit {
   registros: any[] = [];
   loading = false;
   error: string | null = null;
+  plantilla: any;
+  user?: User;
 
   constructor(
     private route: ActivatedRoute,
-    private plantillaService: PlantillasService
-  ) {}
+    private plantillaService: PlantillasService,
+    private dialog: MatDialog,
+    @Optional() @Inject(MAT_DIALOG_DATA) public data: { plantilla: any } | null
+  ) {
+    if (data) {
+      this.plantilla = data.plantilla;
+    }
+  }
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
-      this.fecha = params['fecha'];
-      if (this.fecha) {
-        console.log('Fecha recibida en el componente:', this.fecha);
-        this.cargarRegistrosPorFecha(this.fecha);
-      }
-    });
+    // Si no estamos en modo diálogo, obtener fecha de los parámetros de la ruta
+    if (!this.data) {
+      this.route.queryParams.subscribe(params => {
+        this.fecha = params['fecha'];
+        if (this.fecha) {
+          console.log('Fecha recibida en el componente:', this.fecha);
+          this.cargarRegistrosPorFecha(this.fecha);
+        }
+        
+      });
+    }
+    // Si estamos en modo diálogo, usar los datos proporcionados
+    else {
+      // Aquí puedes manejar la inicialización cuando el componente se usa como diálogo
+      this.plantilla = this.data.plantilla;
+    }
   }
 
   cargarRegistrosPorFecha(fecha: string): void {
@@ -52,6 +72,12 @@ export class DetalleFechasComponent implements OnInit {
             this.error = 'No hay registros disponibles para esta fecha';
           } else {
             console.log(`Se encontraron ${this.registros.length} registros`);
+
+            this.registros.forEach((registro) => {
+              if (registro.user) {
+                this.loadUserDetails(registro);
+              }
+            });
           }
         },
         error: (error: { message: any; }) => {
@@ -60,6 +86,18 @@ export class DetalleFechasComponent implements OnInit {
           this.loading = false;
         }
       });
+  }
+
+  loadUserDetails(registro: any): void {
+    this.plantillaService.getListarUser(registro.user).subscribe(
+      (user: User) => {
+        // Almacena el nombre completo del usuario en el registro
+        registro.usuarioNombre = `${user.username} ${user.last_name}`;
+      },
+      error => {
+        console.error('Error al cargar usuario:', error);
+      }
+    );
   }
 
   async generatePPTX() {
@@ -165,5 +203,26 @@ export class DetalleFechasComponent implements OnInit {
       throw error;
     }
   }
+
+  abrirFormEditar(id: number): void {
+    const registro = this.registros.find(r => r.id === id);
+    const dialogRef = this.dialog.open(EditarPresentacionComponent, {
+      data: {
+        plantillaId: id,  // Añadimos explícitamente el ID
+        plantilla: registro
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === true) {
+        console.log('Edición completada');
+        // Recargar los datos después de la edición
+        if (this.fecha) {
+          this.cargarRegistrosPorFecha(this.fecha);
+        }
+      }
+    });
+  }
+
 
 }

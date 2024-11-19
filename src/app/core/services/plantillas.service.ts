@@ -50,7 +50,7 @@ export class PlantillasService {
   }
 
   putPresentacion(id: number, formData: FormData): Observable<Plantilla> {
-    return this.http.put<Plantilla>(`${this.url}publicaciones/${id}/`, formData);
+    return this.http.put<Plantilla>(`${this.url}publicaciones/${id}`, formData);
   }
 
   getListarUser(id: number): Observable<User>{
