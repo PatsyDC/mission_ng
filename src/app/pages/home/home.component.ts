@@ -43,26 +43,17 @@ export class HomeComponent {
   }
 
   abrirFormulario(fecha: string): void {
-    const fechaSeleccionada = new Date(fecha);
-    const fechaActual = new Date();
-
-    // Calcula la diferencia en días
-    const diferenciaTiempo = fechaActual.getTime() - fechaSeleccionada.getTime();
-    const diferenciaDias = Math.floor(diferenciaTiempo / (1000 * 3600 * 24));
-
-    if (diferenciaDias > 3) {
-      alert('No puedes acceder al formulario para fechas que tienen más de 3 días de antigüedad.');
-      return;
-    }
-
-    const dialog = this.dialog.open(CreatePresentacionComponent);
+    const dialog = this.dialog.open(CreatePresentacionComponent, {
+      data: { fechaSeleccionada: fecha }, // Pasa la fecha seleccionada al formulario
+    });
 
     dialog.afterClosed().subscribe((result) => {
       if (result === true) {
-        console.log('OK');
+        console.log('Formulario completado con éxito.');
       }
     });
   }
+
 
   fechaPasada(dia: string): boolean {
     const fechaSeleccionada = new Date(dia);
@@ -93,4 +84,6 @@ export class HomeComponent {
       }
     });
 }
+
+
 }

@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { PlantillasService } from '../../core/services/plantillas.service';
 import { AuthService } from '../../core/services/auth.service';
 import { MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Inject } from '@angular/core';
 
 @Component({
   selector: 'app-create-presentacion',
@@ -18,18 +20,22 @@ export class CreatePresentacionComponent {
   selectedImageAfter: File | null = null;
 
   constructor(
+    @Inject(MAT_DIALOG_DATA) public data: { fechaSeleccionada?: string },
     private servicePresentacion: PlantillasService,
     private authService: AuthService,
     private formBuilder: FormBuilder,
     private dialog: MatDialogRef<CreatePresentacionComponent>
   ) {
+    const fechaActual = data?.fechaSeleccionada || new Date().toISOString().split('T')[0]; // Fecha seleccionada o actual
     this.fromP = this.formBuilder.group({
-      description : ['', [Validators.required]],
-      image_before : [null],
+      description: ['', [Validators.required]],
+      image_before: [null],
       image_after: [null],
-      fecha : ['', [Validators.required]],
-    })
+      fecha: [fechaActual, [Validators.required]], // Fecha predeterminada
+    });
   }
+
+
 
   onFileSelected(event: any, imageType: string) {
     const fileInput = event.target;
@@ -80,53 +86,56 @@ export class CreatePresentacionComponent {
   }
 
   takePhoto(imageType: string) {
-    const videoElement = document.createElement('video');
-    const canvasElement = document.createElement('canvas');
-    const context = canvasElement.getContext('2d');
+  const videoElement = document.getElementById('video') as HTMLVideoElement;
+  const modal = document.getElementById('cameraModal') as HTMLElement;
+  const closeCamera = document.getElementById('closeCamera') as HTMLButtonElement;
+  const captureButton = document.getElementById('capture') as HTMLButtonElement;
 
-    if (!context) return;
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then((stream) => {
+      videoElement.srcObject = stream;
+      videoElement.play();
+      modal.classList.remove('hidden'); // Mostrar el modal
 
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then((stream) => {
-        videoElement.srcObject = stream;
-        videoElement.play();
+      // Cerrar la cámara
+      closeCamera.onclick = () => {
+        stream.getTracks().forEach((track) => track.stop());
+        modal.classList.add('hidden'); // Ocultar el modal
+      };
 
-        // Abrir un modal o popup con la vista de la cámara
-        const modal = document.createElement('div');
-        modal.classList.add('camera-modal');
-        modal.innerHTML = `
-          <div class="camera-container">
-            <video id="video" autoplay></video>
-            <button id="capture" class="capture-button">Capturar Foto</button>
-          </div>
-        `;
-        document.body.appendChild(modal);
+      // Capturar la imagen
+      captureButton.onclick = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = videoElement.videoWidth;
+        canvas.height = videoElement.videoHeight;
+        const context = canvas.getContext('2d');
+        context?.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL('image/png');
 
-        const captureButton = document.getElementById('capture');
-        captureButton?.addEventListener('click', () => {
-          context.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
-          const dataUrl = canvasElement.toDataURL('image/png');
+        // Convertir la imagen en Blob y asignarla al archivo correspondiente
+        fetch(dataUrl)
+          .then(res => res.blob())
+          .then(blob => {
+            const fileName = `captured_image_${imageType}.png`;
+            if (imageType === 'image_before') {
+              this.selectedImageBefore = new File([blob], fileName, { type: 'image/png' });
+            } else if (imageType === 'image_after') {
+              this.selectedImageAfter = new File([blob], fileName, { type: 'image/png' });
+            }
+            console.log(`${imageType} capturada y asignada`);
+          });
 
-          // Convert the data URL to a Blob and set it as the image file
-          fetch(dataUrl)
-            .then(res => res.blob())
-            .then(blob => {
-              if (imageType === 'image_before') {
-                this.selectedImageBefore = new File([blob], 'captured_image_before.png', { type: 'image/png' });
-              } else if (imageType === 'image_after') {
-                this.selectedImageAfter = new File([blob], 'captured_image_after.png', { type: 'image/png' });
-              }
-            });
+        // Detener el flujo de video y ocultar el modal
+        stream.getTracks().forEach((track) => track.stop());
+        modal.classList.add('hidden');
+      };
+    })
+    .catch((error) => {
+      console.error('Error accediendo a la cámara:', error);
+      alert('No se pudo acceder a la cámara. Por favor, revisa los permisos.');
+    });
+}
 
-          // Detener el stream y cerrar el modal
-          stream.getTracks().forEach(track => track.stop());
-          modal.remove();
-        });
-      })
-      .catch((error) => {
-        console.error("Error accessing the camera: ", error);
-      });
-  }
 
 
 }
