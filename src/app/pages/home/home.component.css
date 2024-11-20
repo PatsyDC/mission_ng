@@ -193,3 +193,9 @@
     display: none;
   }
 }
+.deshabilitado {
+  color: gray;
+  pointer-events: none; /* Bloquea interacciones */
+  opacity: 0.6;
+  cursor: not-allowed;
+}

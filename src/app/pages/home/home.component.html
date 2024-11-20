@@ -13,21 +13,23 @@
 <div class="fechas-container" *ngIf="diasDelMes.length > 0">
   <h2 class="mes-seleccionado">Fechas de {{ mesSeleccionado }}</h2>
 
-  
+
 
   <div class="dias-column">
     <div
       *ngFor="let dia of diasDelMes"
       class="dia-item"
-      (click)="abrirFormulario(dia)">
+      [class.deshabilitado]="fechaPasada(dia)"
+      (click)="!fechaPasada(dia) && abrirFormulario(dia)"> <!-- Bloquear clic si está pasada -->
       <span>{{ dia }}</span>
       <div class="iconos">
 
         <button
-          (click)="verDetalles(dia)"
-          class="icono-boton">
-          <i class="fas fa-eye"></i>
-        </button>
+        (click)="verDetalles(dia)"
+        class="icono-boton"
+        [disabled]="fechaPasada(dia)"> <!-- Botón de detalles bloqueado -->
+        <i class="fas fa-eye"></i>
+      </button>
       </div>
     </div>
   </div>

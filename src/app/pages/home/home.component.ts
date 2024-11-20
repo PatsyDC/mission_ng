@@ -43,6 +43,11 @@ export class HomeComponent {
   }
 
   abrirFormulario(fecha: string): void {
+    if (this.fechaPasada(fecha)) {
+      console.log('No se puede abrir el formulario para fechas pasadas.');
+      return; // Salir si la fecha está bloqueada
+    }
+
     const dialog = this.dialog.open(CreatePresentacionComponent, {
       data: { fechaSeleccionada: fecha }, // Pasa la fecha seleccionada al formulario
     });
@@ -53,6 +58,7 @@ export class HomeComponent {
       }
     });
   }
+
 
 
   fechaPasada(dia: string): boolean {
