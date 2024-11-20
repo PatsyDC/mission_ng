@@ -19,17 +19,15 @@
     <div
       *ngFor="let dia of diasDelMes"
       class="dia-item"
-      [class.deshabilitado]="fechaPasada(dia)"
-      (click)="!fechaPasada(dia) && abrirFormulario(dia)"> <!-- Bloquear clic si está pasada -->
+      (click)="abrirFormulario(dia)">
       <span>{{ dia }}</span>
       <div class="iconos">
 
         <button
-        (click)="verDetalles(dia)"
-        class="icono-boton"
-        [disabled]="fechaPasada(dia)"> <!-- Botón de detalles bloqueado -->
-        <i class="fas fa-eye"></i>
-      </button>
+          (click)="verDetalles(dia)"
+          class="icono-boton">
+          <i class="fas fa-eye"></i>
+        </button>
       </div>
     </div>
   </div>

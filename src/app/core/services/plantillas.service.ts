@@ -9,7 +9,8 @@ import { User } from '../models/user.model';
 })
 export class PlantillasService {
 
-  private url = 'http://127.0.0.1:8000/api/'
+  // private url = 'http://127.0.0.1:8000/api/'
+  private url = 'https://patsykop.pythonanywhere.com/api/'
 
   constructor(
     private http: HttpClient
