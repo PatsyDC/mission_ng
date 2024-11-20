@@ -33,9 +33,14 @@ export class EditarPresentacionComponent {
       fecha: [data.plantilla.fecha, [Validators.required]],
     });
 
-    // Conservar las imágenes existentes si no se seleccionan nuevas
-    this.selectedImageBefore = data.plantilla.image_before;
-    this.selectedImageAfter = data.plantilla.image_after;
+  // Deshabilitar el control de fecha
+  this.fromP.get('fecha')?.disable();
+
+  // Conservar las imágenes existentes si no se seleccionan nuevas
+  this.selectedImageBefore = data.plantilla.image_before;
+  this.selectedImageAfter = data.plantilla.image_after;
+
+
   }
 
   // Método para manejar la selección de archivos
