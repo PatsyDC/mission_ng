@@ -16,6 +16,7 @@ export class EditarPresentacionComponent {
   fromP: FormGroup;
   selectedImageBefore: File | null = null;
   selectedImageAfter: File | null = null;
+  
 
   constructor(
     private servicePresentacion: PlantillasService,
@@ -94,5 +95,56 @@ export class EditarPresentacionComponent {
       }
     }
   }
+
+  takePhoto(imageType: string) {
+    const videoElement = document.getElementById('video') as HTMLVideoElement;
+    const modal = document.getElementById('cameraModal') as HTMLElement;
+    const closeCamera = document.getElementById('closeCamera') as HTMLButtonElement;
+    const captureButton = document.getElementById('capture') as HTMLButtonElement;
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then((stream) => {
+        videoElement.srcObject = stream;
+        videoElement.play();
+        modal.classList.remove('hidden'); // Mostrar el modal
+
+        closeCamera.onclick = () => {
+          stream.getTracks().forEach((track) => track.stop());
+          modal.classList.add('hidden'); // Ocultar el modal
+        };
+
+        captureButton.onclick = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = videoElement.videoWidth;
+          canvas.height = videoElement.videoHeight;
+          const context = canvas.getContext('2d');
+          context?.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+          const dataUrl = canvas.toDataURL('image/png');
+
+          fetch(dataUrl)
+            .then(res => res.blob())
+            .then(blob => {
+              const fileName = `captured_image_${imageType}.png`;
+              const file = new File([blob], fileName, { type: 'image/png' });
+
+              if (imageType === 'image_before') {
+                this.selectedImageBefore = file;
+              } else if (imageType === 'image_after') {
+                this.selectedImageAfter = file;
+              }
+
+              console.log(`${imageType} capturada y asignada`);
+            });
+
+          stream.getTracks().forEach((track) => track.stop());
+          modal.classList.add('hidden');
+        };
+      })
+      .catch((error) => {
+        console.error('Error accediendo a la cámara:', error);
+        alert('No se pudo acceder a la cámara. Por favor, revisa los permisos.');
+      });
+  }
+
 
 }
