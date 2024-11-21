@@ -11,10 +11,10 @@ export class AuthService {
 
   // private url = 'http://127.0.0.1:8000/api/token/';
   // url kop private url = 'https://proyecto.pythonanywhere.com/api/token/';
-  private url = 'https://patsykop.pythonanywhere.com/api/token/'
+  private url = 'https://proyecto.pythonanywhere.com/api/token/'
   // private api_register = 'http://localhost:8000/api';
   // url kop private api_register = 'https://proyecto.pythonanywhere.com/api';
-  private api_register = 'https://patsykop.pythonanywhere.com/api'
+  private api_register = 'https://proyecto.pythonanywhere.com/api'
   private tokenKey = 'authToken' //valor
 
   constructor(private http: HttpClient,
